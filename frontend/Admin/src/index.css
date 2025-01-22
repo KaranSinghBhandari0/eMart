@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes colorChange {
+    0% {
+      color: #FF0000; /* Red */
+    }
+    25% {
+      color: #00FF00; /* Green */
+    }
+    50% {
+      color: #0000FF; /* Blue */
+    }
+    75% {
+      color: #FFFF00; /* Yellow */
+    }
+    100% {
+      color: #FF0000; /* Red */
+    }
+}
+
+#color-changing-text {
+    animation: colorChange 3s infinite; /* 4 seconds per cycle */
+}

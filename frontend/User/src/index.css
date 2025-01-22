@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: #f0f0f0;
+}
+
+@keyframes spin-reverse {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(-360deg);
+  }
+}
+  
+.animate-spin-reverse {
+  animation: spin-reverse 1.5s linear infinite;
+}
+
+@media (max-width: 540px) {
+  .carousel-item img {
+    height: 250px;
+  }  
+  .category {
+    gap: 2rem;
+  }
+}
