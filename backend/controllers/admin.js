@@ -157,20 +157,29 @@ const getAllOrders = async (req, res) => {
 // update Order Status
 const updateOrderStatus = async (req, res) => {
     try {
-        const { orderId } = req.params;
-        const { status, userId } = req.body;
+        const { order, newStatus } = req.body;
+        const { orderId, paymentId, productId } = order;
 
-        const user = await User.findOneAndUpdate(
-            { _id: userId, "orders.orderId": orderId },
-            { $set: { "orders.$.status": status } },
-            { new: true }
-        );
-
+        const user = await User.findById(order.userId);
         if(!user) {
-            return res.status(404).json({ message: "User or Order not found" });
+            return res.status(404).json({ message: "User not found" });
         }
 
-        res.status(200).json({ message: "Order status updated successfully", user });
+        const currOrder = user.orders.find(
+            (o) => o.orderId === orderId && o.paymentId === paymentId && o.productId === productId
+        );
+
+        if(!currOrder) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+
+        console.log(currOrder)
+
+        currOrder.status = newStatus;
+        user.markModified("orders");
+        await user.save();
+
+        res.status(200).json({ message: "Order status updated successfully"});
     } catch (error) {
         res.status(500).json({ message: "Error updating order status", error: error.message });
     }

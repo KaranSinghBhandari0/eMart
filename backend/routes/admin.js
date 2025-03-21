@@ -26,6 +26,6 @@ router.post("/addNewProduct", isAuthorized, upload.single('image'), addNewProduc
 router.put("/updateProduct/:id", isAuthorized, upload.single('image'), updateProduct);
 router.delete("/deleteProduct/:id", isAuthorized, deleteProduct);
 router.get("/allOrders", getAllOrders);
-router.put('/updateOrderStatus/:orderId', isAuthorized, updateOrderStatus )
+router.put('/updateOrderStatus', isAuthorized, updateOrderStatus )
 
 module.exports = router;

@@ -59,7 +59,7 @@ export default function Orders() {
                                     <td className="px-6 py-4 whitespace-nowrap w-28">
                                         <select
                                             value={order.status}
-                                            onChange={(e) => updateOrderStatus(order.orderId, order.userId, e.target.value)}
+                                            onChange={(e) => updateOrderStatus(order, e.target.value)}
                                             className='text-xs p-2 border rounded-lg text-gray-700'
                                         >
                                             <option value="Shipping">Shipping</option>

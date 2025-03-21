@@ -136,16 +136,10 @@ export const AppProvider = ({ children }) => {
     }
 
     // update order status
-    const updateOrderStatus = async (orderId, userId, newStatus) => {
+    const updateOrderStatus = async (order, newStatus) => {
         try {
-            await axiosInstance.put(`/admin/updateOrderStatus/${orderId}`, { userId, status: newStatus });
-    
-            setOrders((prevOrders) =>
-                prevOrders.map(order =>
-                    order.orderId === orderId ? { ...order, status: newStatus } : order
-                )
-            );
-    
+            await axiosInstance.put(`/admin/updateOrderStatus`, {order, newStatus});
+            await allOrders();
             toast.success('Order status updated');
         } catch (error) {
             toast.error('Failed to Update order status');
