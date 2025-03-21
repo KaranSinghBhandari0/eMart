@@ -1,17 +1,24 @@
-import React, { createContext, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import {axiosInstance} from '../lib/axios';
+import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from './AuthContext';
 
 export const ProductContext = createContext();
 
 export const ProductProvider = ({ children }) => {
+
+    const { user } = useContext(AuthContext);
+    const [cart, setCart] = useState([]);
+
     const navigate = useNavigate();
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(false);
 
-    const [products , setProducts] = useState([]);
-    const [product , setProduct] = useState(null);
-    const [categoryProducts , setCategoryProducts] = useState([]);
-
+    useEffect(() => {
+        getAllProducts();
+    }, [products])
+    
     // get all Products
     const getAllProducts = async () => {
         try {
@@ -22,32 +29,97 @@ export const ProductProvider = ({ children }) => {
         }
     }
 
-    // get Products by id
-    const getProductDetails = async (id) => {
+    // update product rating
+    const updateRating = async (productId,rating,review) => {
+        if(!user) {
+            toast.error('login to continue');
+            navigate('/login');
+            return;
+        }
+
         try {
-            setProduct(null);
-            const res = await axiosInstance.get(`/product/${id}`);
-            setProduct(res.data.product);
+            setLoading(true);
+            const res = await axiosInstance.post("/product/update-rating", {productId,rating,review});
+            toast.success(res.data.message);
+            await getAllProducts();
         } catch(error) {
             console.log(error);
+            toast.error(error.response.data.message || "failed to rate product");
+        } finally {
+            setLoading(false);
         }
     }
 
-    // get category products
-    const getCategoryProducts = async (category) => {
-        try {
-            setCategoryProducts([]);
-            const res = await axiosInstance.get(`/product/category/${category}`);
-            setCategoryProducts(res.data.products);
-        } catch(error) {
-            console.log(error);
+    // buy product
+    const handleBuy = async (amount, product) => {
+        if (!user) {
+            toast.error('Login to continue');
+            navigate('/login');
+            return;
         }
-    }
+
+        if(user.address === "") {
+            toast.error('Add Delivery address');
+            navigate('/profile');
+            return;
+        }
+    
+        try {
+            const { data } = await axiosInstance.post('/payment/create-order', { amount } );
+    
+            const options = {
+                key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+                amount: data.order.amount,
+                currency: data.order.currency,
+                name: "Test Payment",
+                description: "Demo Transaction",
+                order_id: data.order.id,
+            handler: function (response) {
+            const savePaymentWithoutCart = async () => {
+                try {
+                await axiosInstance.post( `/payment/save-order`, { orderId: data.order.id, paymentId: response.razorpay_payment_id, cart: [{product:product, quantity:1}] }
+                );
+                    toast.success(`Payment successful`);
+                } catch (error) {
+                    console.error('Error saving payment:', error);
+                    toast.error('Failed to save payment information');
+                }
+            };
+            const savePaymentWithCart = async () => {
+                try {
+                await axiosInstance.post( `/payment/save-order`, { orderId: data.order.id, paymentId: response.razorpay_payment_id, cart }
+                );
+                    toast.success(`Payment successful`);
+                } catch (error) {
+                    console.error('Error saving payment:', error);
+                    toast.error('Failed to save payment information');
+                }
+            };
+                if(product) {
+                    savePaymentWithoutCart();
+                } else {
+                    savePaymentWithCart();
+                }
+            },
+                prefill: {
+                email: "testuser@example.com",
+                contact: "9999999999"
+            },
+                theme: {
+                color: "#3399cc"
+            }
+        };
+            const rzp = new window.Razorpay(options);
+            rzp.open();
+        } catch (error) {
+            console.error("Error in creating Razorpay order", error);
+            toast.error('Failed to create order. Please try again later.');
+        }
+    };
 
     return (
         <ProductContext.Provider value={{
-            getAllProducts, getProductDetails, getCategoryProducts,
-            products, product, categoryProducts,
+            getAllProducts, products, updateRating, loading, handleBuy, setCart
         }}>
             {children}
         </ProductContext.Provider>

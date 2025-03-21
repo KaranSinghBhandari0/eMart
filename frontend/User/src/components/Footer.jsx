@@ -1,31 +1,49 @@
+import React from "react";
+import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
+
 export default function Footer() {
-  return (
-    <footer className="w-full bg-gray-800 text-white flex flex-col items-center py-5 gap-5 text-center mt-auto">
-      <div className="w-full flex justify-evenly items-center flex-wrap">
-        <div className="flex flex-col items-center gap-2 my-2">
-          <a href="#" className="hover:underline">About Us</a>
-          <a href="#" className="hover:underline">Privacy Policy</a>
-          <a href="#" className="hover:underline">Terms & Conditions</a>
-        </div>
-        <div className="flex flex-col items-center gap-2 my-2">
-          <a href="#" className="hover:underline">Refund Policy</a>
-          <a href="#" className="hover:underline">Shipping Policy</a>
-          <a href="#" className="hover:underline">Contact Us</a>
-        </div>
-        <div className="flex flex-col items-center gap-2 my-2">
-          <a href="#" className="hover:underline flex items-center">
-            <i className="fa-solid fa-location-pin mr-2"></i>16/1 Rohini Delhi-112642
-          </a>
-          <a href="#" className="hover:underline">abcd@gmail.com</a>
-          <a href="#" className="hover:underline">+91 9958634750</a>
-        </div>
-      </div>
-      <div className="flex gap-4 text-2xl">
-        <i className="fa-brands fa-square-facebook cursor-pointer hover:translate-y-[-5px] transition-transform"></i>
-        <i className="fa-brands fa-square-twitter cursor-pointer hover:translate-y-[-5px] transition-transform"></i>
-        <i className="fa-brands fa-square-instagram cursor-pointer hover:translate-y-[-5px] transition-transform"></i>
-      </div>
-      <p>E-commerce Pvt. Ltd © 2012 - 2024. All Rights Reserved.</p>
-    </footer>
-  );
+    return (
+        <footer className="w-full bg-gray-900 text-white mt-16">
+            <div className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h2 className="text-2xl font-bold">eMart</h2>
+                    <p className="text-gray-400 text-sm mt-2">
+                        Your one-stop shop for the best products online. Secure shopping with fast delivery. Stay home & get your daily needs from our shop
+                    </p>
+                </div>
+
+                <div>
+                    <h2 className="text-lg font-semibold">Company</h2>
+                    <ul className="mt-2 space-y-2 text-gray-400">
+                        <li><a href="#" className="hover:text-white text-sm">Home</a></li>
+                        <li><a href="#" className="hover:text-white text-sm">Contact</a></li>
+                        <li><a href="#" className="hover:text-white text-sm">Shipping</a></li>
+                        <li><a href="#" className="hover:text-white text-sm">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h2 className="text-lg font-semibold">Follow Us</h2>
+                    <div className="flex space-x-4 mt-2">
+                        <a href="#" className="text-gray-400 hover:text-white text-xl">
+                            <FaFacebook />
+                        </a>
+                        <a href="#" className="text-gray-400 hover:text-white text-xl">
+                            <FaTwitter />
+                        </a>
+                        <a href="#" className="text-gray-400 hover:text-white text-xl">
+                            <FaInstagram />
+                        </a>
+                        <a href="#" className="text-gray-400 hover:text-white text-xl">
+                            <FaLinkedin />
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div className="border-t border-gray-700 text-center py-4 text-gray-500 text-sm">
+                Copyright 2025 © eMart All Rights Reserved.
+            </div>
+        </footer>
+    );
 }

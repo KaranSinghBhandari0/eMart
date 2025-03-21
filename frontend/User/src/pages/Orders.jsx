@@ -1,120 +1,112 @@
-import React, { useContext, useState, useEffect } from "react";
-import { AuthContext } from "../context/AuthContext";
+import React, { useContext, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
+
+import EmptyOrders from '../components/EmptyOrders';
+import ProductCard from '../components/ProductCard';
+import { AuthContext } from '../context/AuthContext';
+import { ProductContext } from '../context/ProductContext';
 
 export default function Orders() {
-  const [searchPaymentId, setSearchPaymentId] = useState("");
-  const [loadingDetails, setLoadingDetails] = useState(false);
-  const [loadingOrders, setLoadingOrders] = useState(false);
+    const { orders, isAuthenticated } = useContext(AuthContext);
+    const { products } = useContext(ProductContext);
 
-  const { getOrders, orders, orderDetails, fetchOrderDetails } =
-    useContext(AuthContext);
+    useEffect(() => {
+        isAuthenticated();
+    }, [])
 
-  useEffect(() => {
-    setLoadingOrders(true);
-    getOrders().finally(() => setLoadingOrders(false));
-  }, []);
+    return (
+        <div className='w-full'>
+            <div className='w-full max-w-6xl mx-auto p-4'>
+                <p className='text-2xl text-gray-800 font-semibold py-4 px-2'>
+                    Order History
+                </p>
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    setLoadingDetails(true);
-    await fetchOrderDetails(searchPaymentId);
-    setLoadingDetails(false);
-  };
+                {orders.length == 0 ?
+                    <EmptyOrders />
+                    :
+                    <>
+                        <div className="overflow-x-auto border rounded-lg">
+                            <table className="min-w-full shadow-md">
+                                <thead className="border-b">
+                                    <tr className="text-left">
+                                        <th className="px-6 py-3 text-sm font-medium uppercase tracking-wider w-36">Order ID</th>
+                                        <th className="px-6 py-3 text-sm font-medium uppercase tracking-wider w-80">Product</th>
+                                        <th className="px-6 py-3 text-sm font-medium uppercase tracking-wider w-40">Date</th>
+                                        <th className="px-6 py-3 text-sm font-medium uppercase tracking-wider w-32">Amount</th>
+                                        <th className="px-6 py-3 text-sm font-medium uppercase tracking-wider w-24">Quantity</th>
+                                        <th className="px-6 py-3 text-sm font-medium uppercase tracking-wider w-28">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y">
+                                    {orders.map((order, index) => (
+                                        <tr key={index} className="text-left hover:bg-gray-50">
+                                            <td className="px-6 py-4 whitespace-nowrap w-36">
+                                                <p className="text-sm font-medium text-gray-900">{order.orderId}</p>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap w-80">
+                                                <Link to={`/product/${order.productId}`} className="flex items-center">
+                                                    <img src={order.productImage} alt={order.productName} className="w-10 h-10 rounded-md object-contain" />
+                                                    <div className="ml-4 max-w-sm overflow-hidden text-ellipsis whitespace-nowrap">
+                                                        <p className="text-sm font-medium text-gray-900 truncate">{order.productName}</p>
+                                                        <p className="text-sm text-gray-500">{order.category}</p>
+                                                    </div>
+                                                </Link>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap w-40">
+                                                <p className="text-sm text-gray-500">{order.date}</p>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap w-32">
+                                                <p className="text-sm text-gray-500">
+                                                    ₹ {(order.amount).toLocaleString("en-IN")}
+                                                </p>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap w-24"> {/* New column */}
+                                                <p className="text-sm text-gray-500">{order.quantity}</p>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap w-28">
+                                                <span
+                                                    className={`px-2 py-1 text-xs font-semibold rounded-full ${order.status === 'Delivered'
+                                                        ? 'bg-green-100 text-green-800'
+                                                        : order.status === 'Shipping'
+                                                            ? 'bg-blue-100 text-blue-800'
+                                                            : order.status === 'Out for Delivery'
+                                                                ? 'bg-yellow-100 text-yellow-800'
+                                                                : 'bg-red-100 text-red-800'
+                                                        }`}
+                                                >
+                                                    {order.status}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
 
-  return (
-    <div className="w-full min-h-[80vh] max-w-7xl mx-auto p-4">
-      {/* Order Details Section */}
-      <section className="mt-3 w-full bg-white flex flex-col items-center p-4 rounded shadow-md">
-        <h5 className="text-lg md:text-xl font-semibold text-center">
-          Fetch Your Order Details
-        </h5>
-        <form
-          onSubmit={handleSearch}
-          className="flex flex-col md:flex-row gap-3 w-full max-w-md mt-4"
-        >
-          <input
-            type="text"
-            className="form-control border border-gray-300 rounded px-3 py-2 w-full"
-            placeholder="Enter your payment ID..."
-            value={searchPaymentId}
-            onChange={(e) => setSearchPaymentId(e.target.value)}
-            required
-          />
-          <button
-            type="submit"
-            className="bg-green-600 rounded-xl px-3 py-2 bg-green-600 text-white w-full md:w-auto border-none hover:bg-green-500"
-          >
-            <i className="fa-solid fa-magnifying-glass"></i>
-          </button>
-        </form>
-
-        {/* Order Details Display */}
-        {loadingDetails ? (
-          <p className="mt-3">Loading order details...</p>
-        ) : (
-          orderDetails && (
-            <div className="mt-4 text-left w-full max-w-md">
-              <p>
-                <strong>Order ID:</strong> {orderDetails.order_id}
-              </p>
-              <p>
-                <strong>Payment ID:</strong> {orderDetails.id}
-              </p>
-              <p>
-                <strong>Amount:</strong> ₹{orderDetails.amount / 100}
-              </p>
-              <p>
-                <strong>Currency:</strong> {orderDetails.currency}
-              </p>
-              <p>
-                <strong>Status:</strong> {orderDetails.status}
-              </p>
-              <p>
-                <strong>Date:</strong>{" "}
-                {new Date(orderDetails.created_at).toLocaleDateString()}
-              </p>
+                        </div>
+                        <Link
+                            to="/allProducts"
+                            className="px-6 py-3 bg-primary text-white font-semibold rounded-full transition-transform duration-300 ease-in-out hover:scale-105 shadow-md hover:shadow-lg my-4 flex items-center gap-2 w-fit"
+                        >
+                            Continue Shopping <ArrowRight size={20} />
+                        </Link>
+                    </>
+                }
             </div>
-          )
-        )}
-      </section>
 
-      {/* Orders List Section */}
-      <section className="mt-6 bg-white p-4 rounded shadow-md">
-        <h3 className="text-lg md:text-xl font-semibold text-center">
-          Your Orders
-        </h3>
-        {loadingOrders ? (
-          <p className="mt-3 text-center">Loading orders...</p>
-        ) : orders.length === 0 ? (
-          <p className="mt-3 text-center">No Orders found...</p>
-        ) : (
-          <div className="overflow-x-auto mt-4">
-            <table className="table-auto w-full border-collapse border border-gray-300">
-              <thead>
-                <tr className="bg-gray-100">
-                  <th className="border px-4 py-2 text-sm md:text-base">
-                    Order ID
-                  </th>
-                  <th className="border px-4 py-2 text-sm md:text-base">
-                    Payment ID
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {orders.map((order, index) => (
-                  <tr
-                    key={index}
-                    className="hover:bg-gray-50 text-sm md:text-base"
-                  >
-                    <td className="border px-4 py-2">{order.orderId}</td>
-                    <td className="border px-4 py-2">{order.paymentId}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>
-    </div>
-  );
+            <div className="hidden md:block">
+                <p className="text-2xl text-gray-700 font-semibold text-center mt-6">
+                    Related <span className="text-primary"> Products </span>
+                </p>
+                <div className="flex justify-evenly flex-wrap gap-6 p-4">
+                    {products.slice(0, 4).map((product) => (
+                        <ProductCard key={product._id} product={product} />
+                    ))}
+                </div>
+                <Link to="/allProducts" className="bg-gray-300 border px-4 py-2 rounded-lg mx-auto block text-center w-fit">
+                    See more
+                </Link>
+            </div>
+        </div>
+    );
 }

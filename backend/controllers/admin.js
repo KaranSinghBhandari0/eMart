@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const Product = require('../models/Product');
+const User = require('../models/User');
 const cloudinary = require('../lib/cloudConfig');
-const path = require("path");
 
 // cookies option
 const cookieOptions = {
@@ -136,4 +136,44 @@ const deleteProduct = async (req, res) => {
     }
 }
 
-module.exports = { login, logout, checkAuth, addNewProduct, updateProduct, deleteProduct };
+// all Orders
+const getAllOrders = async (req, res) => {
+    try {
+        const allUsers = await User.find();
+
+        const orders = allUsers.flatMap(user => 
+            user.orders.map(order => ({
+                userId: user._id,
+                ...order
+            }))
+        );
+
+        res.status(200).json(orders);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching orders', error: error.message });
+    }
+};
+
+// update Order Status
+const updateOrderStatus = async (req, res) => {
+    try {
+        const { orderId } = req.params;
+        const { status, userId } = req.body;
+
+        const user = await User.findOneAndUpdate(
+            { _id: userId, "orders.orderId": orderId },
+            { $set: { "orders.$.status": status } },
+            { new: true }
+        );
+
+        if(!user) {
+            return res.status(404).json({ message: "User or Order not found" });
+        }
+
+        res.status(200).json({ message: "Order status updated successfully", user });
+    } catch (error) {
+        res.status(500).json({ message: "Error updating order status", error: error.message });
+    }
+};
+
+module.exports = { login, logout, checkAuth, addNewProduct, updateProduct, deleteProduct, getAllOrders, updateOrderStatus };

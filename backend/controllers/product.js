@@ -10,35 +10,35 @@ const getAllProducts = async (req,res) => {
     }
 }
 
-// get products by category
-const categoryProducts = async (req, res) => {
-    const { category } = req.params;
-
+const updateProductRating = async (req, res) => {
     try {
-        const products = await Product.find({ category });
-        if (products.length === 0) {
-            return res.status(404).json({ message: 'No products found' });
-        }
-        res.status(200).json({ message: 'Products fetched successfully', products });
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching category products', error });
-    }
-}
+        const { productId, rating, review } = req.body;
 
-// get product by id
-const getProductDetails = async (req,res)=> {
-    try {
-        const { id } = req.params;
-        const product = await Product.findById(id);
-
-        if(!product) {
-            return res.status(404).json({ message: 'No product found' });
+        if (!req.user) {
+            return res.status(401).json({ message: 'Login to continue' });
         }
 
-        res.status(200).json({ product });
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching product', error });
-    }
-}
+        const product = await Product.findById(productId);
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+ 
+        if(rating === 0) {
+            return res.status(400).json({ message: 'Please select rating' });
+        }
 
-module.exports = { getAllProducts, categoryProducts, getProductDetails }
+        // Calculate new average rating
+        const totalReviews = product.reviews + 1;
+        const newRating = ((product.rating * product.reviews) + rating) / totalReviews;
+
+        product.reviews = totalReviews;
+        product.rating = newRating;
+
+        await product.save();
+        res.status(200).json({ message: 'Product rating updated' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating product rating', error });
+    }
+};
+
+module.exports = { getAllProducts, updateProductRating }

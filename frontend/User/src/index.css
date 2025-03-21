@@ -2,28 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  background-color: #f0f0f0;
+* {
+    scroll-behavior: smooth;
 }
 
-@keyframes spin-reverse {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(-360deg);
-  }
-}
-  
-.animate-spin-reverse {
-  animation: spin-reverse 1.5s linear infinite;
-}
-
-@media (max-width: 540px) {
-  .carousel-item img {
-    height: 250px;
-  }  
-  .category {
-    gap: 2rem;
-  }
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover, 
+textarea:-webkit-autofill:focus, 
+textarea:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0px 1000px white inset;
+    -webkit-text-fill-color: black;
 }

@@ -19,6 +19,7 @@ const addToCart = async (req,res) => {
         }
 
         await currUser.save();
+
         res.status(200).json({ message: "Product added to cart" });
     } catch (error) {
         res.status(500).json({ message: "Error adding product to cart", error: error.message });
@@ -116,6 +117,5 @@ const transfer = async (req, res) => {
         res.status(500).json({ msg: 'Error transferring cart', error: error.message });
     }
 }
-
 
 module.exports = { addToCart, getCart, updateCart, deleteItem, transfer}

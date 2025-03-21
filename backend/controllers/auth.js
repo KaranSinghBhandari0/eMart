@@ -90,5 +90,26 @@ const checkAuth = async (req,res) => {
     res.status(200).json(req.user);   
 }
 
+const updateProfile = async (req, res) => {
+    try {
+        const { username, address } = req.body;
 
-module.exports = { signup, login, logout, checkAuth };
+        const user = await User.findById(req.user._id);
+
+        const newUsername = username.trim();
+        const newAddress = address.trim();
+
+        if(newUsername !== "") {
+            user.username = newUsername;
+        }
+        
+        user.address = newAddress;
+
+        await user.save();
+        res.status(200).json({ msg: 'Profile Updated !!!'});
+    } catch (error) {
+        res.status(500).json({ msg: 'Server error', error: error.message });
+    }
+}
+
+module.exports = { signup, login, logout, checkAuth, updateProfile };

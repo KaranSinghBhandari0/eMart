@@ -33,6 +33,10 @@ const userSchema = new mongoose.Schema({
     ],
     orders: {
         type: Array
+    },
+    address: {
+        type: String,
+        default: ""
     }
 });
 

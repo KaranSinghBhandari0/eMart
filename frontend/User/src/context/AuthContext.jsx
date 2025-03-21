@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import {axiosInstance} from '../lib/axios';
@@ -8,12 +8,29 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const navigate = useNavigate();
 
-    const [user, setUser] = useState(null)
+    const [user, setUser] = useState(null);
     const [checkingAuth, setCheckingAuth] = useState(true);
+    const [orders, setOrders] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    // checkAuth
+    const isAuthenticated = async () => {
+        try {
+            const res = await axiosInstance.get("/auth/checkAuth");
+            setUser(res.data);
+            setOrders(res.data.orders);
+        } catch(error) {
+            setUser(null);
+            console.log("Error in checkAuth:", error);
+        } finally {
+            setCheckingAuth(false);
+        }
+    }
 
     // signup
     const signup = async (formData) => {
         try {
+            setLoading(true);
             const res = await axiosInstance.post("/auth/signup", formData);
             setUser(res.data.user);
             transferGuestCartToUser();
@@ -22,12 +39,15 @@ export const AuthProvider = ({ children }) => {
         } catch(error) {
             console.log(error);
             toast.error(error.response?.data?.msg || "Signup failed");
+        } finally {
+            setLoading(false);
         }
     }
 
     // login
     const login = async (formData) => {
         try {
+            setLoading(true);
             const res = await axiosInstance.post("/auth/login", formData);
             setUser(res.data.user);
             transferGuestCartToUser();
@@ -36,12 +56,15 @@ export const AuthProvider = ({ children }) => {
         } catch(error) {
             console.log(error);
             toast.error(error.response?.data?.msg || "Login failed");
+        } finally {
+            setLoading(false);
         }
     }
 
     // logout
     const logout = async () => {
         try {
+            setLoading(true);
             const res = await axiosInstance.get("/auth/logout");
             setUser(null);
             toast.success("logout successfull");
@@ -49,19 +72,8 @@ export const AuthProvider = ({ children }) => {
         } catch(error) {
             console.log(error);
             toast.error(error.response.data.message);
-        }
-    }
-
-    // checkAuth
-    const isAuthenticated = async () => {
-        try {
-            const res = await axiosInstance.get("/auth/checkAuth");
-            setUser(res.data);
-        } catch(error) {
-            setUser(null);
-            console.log("Error in checkAuth:", error);
         } finally {
-            setCheckingAuth(false);
+            setLoading(false);
         }
     }
 
@@ -81,36 +93,25 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    // get all orders
-    const [orders, setOrders] = useState([]);
-    const [orderDetails, setOrderDetails] = useState(null);
-
-    const getOrders = async () => {
+    // update profile
+    const updateProfile = async (username, address) => {
         try {
-            const res = await axiosInstance.get(`/payment/orders`);
-            setOrders(res.data.orders);
-        } catch (error) {
-            toast.error('Server Error');
+            setLoading(true);
+            await axiosInstance.post("/auth/updateProfile", {username, address});
+            await isAuthenticated();
+            toast.success("Profile Updated !!!");
+        } catch(error) {
             console.log(error);
+            toast.error(error.response?.data?.msg || "failed to update profile");
+        } finally {
+            setLoading(false);
         }
-    };
-
-    // fetch order details
-    const fetchOrderDetails = async (searchPaymentId) => {
-        try {
-            const response = await axiosInstance.get(`/payment/order-details/${searchPaymentId}`);
-            setOrderDetails(response.data.orderDetails);
-        } catch (error) {
-            console.error("Error fetching order details", error);
-            toast.error('Failed to fetch order details');
-        }
-    };
+    }
 
     return (
         <AuthContext.Provider value={{
-            signup, login, logout,
-            user, isAuthenticated, checkingAuth,
-            getOrders, orders, orderDetails, fetchOrderDetails
+            signup, login, logout, isAuthenticated, updateProfile,
+            user, checkingAuth, loading, orders,
         }}>
             {children}
         </AuthContext.Provider>

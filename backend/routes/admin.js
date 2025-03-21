@@ -16,7 +16,7 @@ const upload = multer({
     },
 });
 
-const { login, logout, checkAuth, addNewProduct, updateProduct, deleteProduct } = require('../controllers/admin');
+const { login, logout, checkAuth, addNewProduct, updateProduct, deleteProduct, getAllOrders, updateOrderStatus } = require('../controllers/admin');
 const { isAuthorized } = require('../Middlewares/auth');
 
 router.post("/login", login);
@@ -25,5 +25,7 @@ router.get("/checkAuth", isAuthorized, checkAuth);
 router.post("/addNewProduct", isAuthorized, upload.single('image'), addNewProduct);
 router.put("/updateProduct/:id", isAuthorized, upload.single('image'), updateProduct);
 router.delete("/deleteProduct/:id", isAuthorized, deleteProduct);
+router.get("/allOrders", getAllOrders);
+router.put('/updateOrderStatus/:orderId', isAuthorized, updateOrderStatus )
 
 module.exports = router;

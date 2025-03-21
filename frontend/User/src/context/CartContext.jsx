@@ -1,28 +1,36 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import {axiosInstance} from '../lib/axios';
 
 import { AuthContext } from './AuthContext';
+import { ProductContext } from './ProductContext';
 
 export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-    const navigate = useNavigate();
 
-    const {user} = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
+    const { setCart } = useContext(ProductContext);
+
     const [cartProducts, setCartProducts] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        getCart();
+    }, [user])
 
     // add to cart
     const addToCart = async (product) => {
         // If not logged in
         if(!user) {
             addToGuestCart(product);
+            await getCart();
             return;
         }
 
         try {
-            const res = await axiosInstance.post('/cart/add', {product : product});
+            await axiosInstance.post('/cart/add', {product : product});
+            await getCart();
             toast.success('Added to cart');
         } catch (error) {
             toast.error('Failed to add');
@@ -39,10 +47,15 @@ export const CartProvider = ({ children }) => {
         }
 
         try {
+            setLoading(true);
             const res = await axiosInstance.get('/cart/items');
             setCartProducts(res.data.products);
+            setCart(res.data.products);
         } catch (error) {
             console.log(error);
+        } 
+        finally {
+            setLoading(false);
         }
     }
 
@@ -95,7 +108,6 @@ export const CartProvider = ({ children }) => {
             console.log(error);
         }
     };
-
 
     // --------------- Guest Cart functions ------------------
 
@@ -150,7 +162,7 @@ export const CartProvider = ({ children }) => {
 
     return (
         <CartContext.Provider value={{
-            cartProducts, addToCart, getCart, updateCart, deleteCartItem,
+            cartProducts, loading, addToCart, getCart, updateCart, deleteCartItem,
         }}>
             {children}
         </CartContext.Provider>
