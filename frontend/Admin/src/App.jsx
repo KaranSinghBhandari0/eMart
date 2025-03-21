@@ -20,7 +20,7 @@ export default function App() {
         isAuthorized();
     }, [])
 
-    if (checkingAuth && !admin)
+    if(checkingAuth && !admin)
         return (
             <div className="flex items-center justify-center h-screen bg-blue-100">
                 <Loader className="animate-spin" />

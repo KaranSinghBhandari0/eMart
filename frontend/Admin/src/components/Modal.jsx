@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
+import { X } from 'lucide-react';
 import { AppContext } from "../context/AppContext";
 
 export default function Modal() {
@@ -58,12 +59,10 @@ export default function Modal() {
         openModal && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
                 <div className="bg-white rounded-lg shadow-lg p-6 relative w-[90%] max-w-md">
-                    <button
-                        className="absolute top-2 right-3 text-xl text-red-500"
-                        onClick={() => setOpenModal(false)}
-                    >
-                        <i className="fa-solid fa-xmark"></i>
-                    </button>
+                    
+                    <X className="absolute top-2 right-3 text-xl text-red-500 cursor-pointer"
+                    onClick={() => setOpenModal(false)} />
+
                     <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
                         {/* Product Name */}
                         <div>
