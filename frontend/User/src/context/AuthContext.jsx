@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }) => {
             setLoading(true);
             const res = await axiosInstance.post("/auth/signup", formData);
             setUser(res.data.user);
-            transferGuestCartToUser();
+            await transferGuestCartToUser();
             toast.success(res.data.msg);
             navigate('/');
         } catch(error) {
@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }) => {
             setLoading(true);
             const res = await axiosInstance.post("/auth/login", formData);
             setUser(res.data.user);
-            transferGuestCartToUser();
+            await transferGuestCartToUser();
             toast.success(res.data.msg);
             navigate('/');
         } catch(error) {
