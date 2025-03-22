@@ -30,42 +30,50 @@ export const ProductProvider = ({ children }) => {
     }
 
     // update product rating
-    const updateRating = async (productId,rating,review) => {
-        if(!user) {
-            toast.error('login to continue');
+    const updateRating = async (productId, rating, review) => {
+        if (!user) {
+            toast.error('Login to continue');
+            
+            // Store intended URL
+            localStorage.setItem("redirectPath", window.location.pathname);
+    
             navigate('/login');
             return;
         }
-
+    
         try {
             setLoading(true);
-            const res = await axiosInstance.post("/product/update-rating", {productId,rating,review});
+            const res = await axiosInstance.post("/product/update-rating", { productId, rating, review });
             toast.success(res.data.message);
             await getAllProducts();
-        } catch(error) {
+        } catch (error) {
             console.log(error);
-            toast.error(error.response.data.message || "failed to rate product");
+            toast.error(error.response?.data?.message || "Failed to rate product");
         } finally {
             setLoading(false);
         }
-    }
-
+    };
+    
     // buy product
     const handleBuy = async (amount, product) => {
         if (!user) {
             toast.error('Login to continue');
+    
+            // Store intended URL
+            localStorage.setItem("redirectPath", window.location.pathname);
+    
             navigate('/login');
             return;
         }
-
-        if(user.address === "") {
+    
+        if (user.address === "") {
             toast.error('Add Delivery address');
             navigate('/profile');
             return;
         }
     
         try {
-            const { data } = await axiosInstance.post('/payment/create-order', { amount } );
+            const { data } = await axiosInstance.post('/payment/create-order', { amount });
     
             const options = {
                 key: import.meta.env.VITE_RAZORPAY_KEY_ID,
@@ -74,41 +82,31 @@ export const ProductProvider = ({ children }) => {
                 name: "Test Payment",
                 description: "Demo Transaction",
                 order_id: data.order.id,
-            handler: function (response) {
-            const savePaymentWithoutCart = async () => {
-                try {
-                await axiosInstance.post( `/payment/save-order`, { orderId: data.order.id, paymentId: response.razorpay_payment_id, cart: [{product:product, quantity:1}] }
-                );
-                    toast.success(`Payment successful`);
-                } catch (error) {
-                    console.error('Error saving payment:', error);
-                    toast.error('Failed to save payment information');
-                }
-            };
-            const savePaymentWithCart = async () => {
-                try {
-                await axiosInstance.post( `/payment/save-order`, { orderId: data.order.id, paymentId: response.razorpay_payment_id, cart }
-                );
-                    toast.success(`Payment successful`);
-                } catch (error) {
-                    console.error('Error saving payment:', error);
-                    toast.error('Failed to save payment information');
-                }
-            };
-                if(product) {
-                    savePaymentWithoutCart();
-                } else {
-                    savePaymentWithCart();
-                }
-            },
+                handler: function (response) {
+                    const savePayment = async () => {
+                        try {
+                            await axiosInstance.post(`/payment/save-order`, {
+                                orderId: data.order.id,
+                                paymentId: response.razorpay_payment_id,
+                                cart: product ? [{ product, quantity: 1 }] : cart
+                            });
+                            toast.success(`Payment successful`);
+                        } catch (error) {
+                            console.error('Error saving payment:', error);
+                            toast.error('Failed to save payment information');
+                        }
+                    };
+                    savePayment();
+                },
                 prefill: {
-                email: "testuser@example.com",
-                contact: "9999999999"
-            },
+                    email: "testuser@example.com",
+                    contact: "9999999999"
+                },
                 theme: {
-                color: "#3399cc"
-            }
-        };
+                    color: "#3399cc"
+                }
+            };
+    
             const rzp = new window.Razorpay(options);
             rzp.open();
         } catch (error) {

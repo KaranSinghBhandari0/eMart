@@ -16,8 +16,10 @@ export const CartProvider = ({ children }) => {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        getCart();
-    }, [user])
+        if(user) {
+            getCart();
+        }
+    }, [user]);
 
     // add to cart
     const addToCart = async (product) => {

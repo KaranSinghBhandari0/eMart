@@ -1,7 +1,7 @@
 import React, { createContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import {axiosInstance} from '../lib/axios';
+import { axiosInstance } from '../lib/axios';
 
 export const AuthContext = createContext();
 
@@ -19,28 +19,11 @@ export const AuthProvider = ({ children }) => {
             const res = await axiosInstance.get("/auth/checkAuth");
             setUser(res.data);
             setOrders(res.data.orders);
-        } catch(error) {
+        } catch (error) {
             setUser(null);
             console.log("Error in checkAuth:", error);
         } finally {
             setCheckingAuth(false);
-        }
-    }
-
-    // signup
-    const signup = async (formData) => {
-        try {
-            setLoading(true);
-            const res = await axiosInstance.post("/auth/signup", formData);
-            setUser(res.data.user);
-            await transferGuestCartToUser();
-            toast.success(res.data.msg);
-            navigate('/');
-        } catch(error) {
-            console.log(error);
-            toast.error(error.response?.data?.msg || "Signup failed");
-        } finally {
-            setLoading(false);
         }
     }
 
@@ -51,14 +34,40 @@ export const AuthProvider = ({ children }) => {
             const res = await axiosInstance.post("/auth/login", formData);
             setUser(res.data.user);
             await transferGuestCartToUser();
+            redirectToPath();
             toast.success(res.data.msg);
-            navigate('/');
-        } catch(error) {
+        } catch (error) {
             console.log(error);
             toast.error(error.response?.data?.msg || "Login failed");
         } finally {
             setLoading(false);
         }
+    }
+
+    // signup
+    const signup = async (formData) => {
+        try {
+            setLoading(true);
+            const res = await axiosInstance.post("/auth/signup", formData);
+            setUser(res.data.user);
+            await transferGuestCartToUser();
+            redirectToPath();
+            toast.success(res.data.msg);
+        } catch (error) {
+            console.log(error);
+            toast.error(error.response?.data?.msg || "Signup failed");
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    // redirect url 
+    const redirectToPath = () => {
+        const redirectPath = localStorage.getItem("redirectPath") || "/";
+        setTimeout(() => {
+            navigate(redirectPath);
+        }, 100);
+        localStorage.removeItem("redirectPath");
     }
 
     // logout
@@ -69,7 +78,7 @@ export const AuthProvider = ({ children }) => {
             setUser(null);
             toast.success("logout successfull");
             navigate('/login');
-        } catch(error) {
+        } catch (error) {
             console.log(error);
             toast.error(error.response.data.message);
         } finally {
@@ -81,7 +90,7 @@ export const AuthProvider = ({ children }) => {
     const transferGuestCartToUser = async () => {
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-        if(cart.length === 0) {
+        if (cart.length === 0) {
             return;
         }
 
@@ -97,10 +106,10 @@ export const AuthProvider = ({ children }) => {
     const updateProfile = async (username, address) => {
         try {
             setLoading(true);
-            await axiosInstance.post("/auth/updateProfile", {username, address});
+            await axiosInstance.post("/auth/updateProfile", { username, address });
             await isAuthenticated();
             toast.success("Profile Updated !!!");
-        } catch(error) {
+        } catch (error) {
             console.log(error);
             toast.error(error.response?.data?.msg || "failed to update profile");
         } finally {

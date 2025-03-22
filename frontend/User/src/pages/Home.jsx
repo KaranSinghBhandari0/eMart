@@ -1,12 +1,13 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
+import { ChevronDown } from "lucide-react";
 import ProductCard from "../components/ProductCard";
 import Carousel from "../components/Carousel";
 import { ProductContext } from '../context/ProductContext';
 
 export default function Home() {
     const { products } = useContext(ProductContext);
-    
+
     return (
         <div className="py-3 w-full">
             <Carousel />
@@ -21,9 +22,18 @@ export default function Home() {
                 ))}
             </div>
 
-            <Link to="/allProducts" className="bg-gray-300 border px-4 py-2 rounded-lg mx-auto block text-center w-fit">
-                See more
-            </Link>
+            <div className="relative flex items-center my-6">
+                <div className="flex-1 border-t border-gray-300"></div>
+
+                <Link
+                    to="/allProducts"
+                    className="flex items-center justify-center bg-gray-300 border w-10 h-10 rounded-full mx-4"
+                >
+                    <ChevronDown size={18} />
+                </Link>
+
+                <div className="flex-1 border-t border-gray-300"></div>
+            </div>
         </div>
     );
 }

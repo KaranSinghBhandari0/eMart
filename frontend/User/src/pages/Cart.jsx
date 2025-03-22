@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 
@@ -11,14 +11,26 @@ import { CartContext } from '../context/CartContext';
 import { ProductContext } from '../context/ProductContext';
 
 export default function Cart() {
-    const { cartProducts, loading } = useContext(CartContext);
+    const { cartProducts, loading, getCart } = useContext(CartContext);
     const { products } = useContext(ProductContext);
+
+    useEffect(() => {
+        fetchCart();
+    }, []);
+
+    const fetchCart = async () => {
+        try {
+            await getCart();
+        } catch (error) {
+            console.error('Error fetching cart:', error);
+        }
+    };
 
     const calculateSubtotal = () => {
         return cartProducts.reduce((total, item) => total + item.product.price * item.quantity, 0);
     };
 
-    if(loading) {
+    if (loading) {
         return (
             <div className='h-[80vh] w-full flex flex-col items-center justify-center'>
                 <p>Loading Cart...</p>
@@ -26,7 +38,7 @@ export default function Cart() {
         );
     }
 
-    if(!loading && cartProducts.length === 0) {
+    if (!loading && cartProducts.length === 0) {
         return <EmptyCart />;
     }
 
