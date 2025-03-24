@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { AiFillStar } from "react-icons/ai";
-import { ProductContext } from "../context/ProductContext";
 import { ProductStore } from "../store/ProductStore";
 
 export default function ProductRating({productId}) {
