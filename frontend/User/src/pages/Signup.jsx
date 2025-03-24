@@ -41,7 +41,7 @@ export default function Signup() {
                         type="text"
                         name="username"
                         placeholder="John Doe"
-                        className="border border-2 border-gray-300 rounded-2xl px-3 py-2 focus:border-primary focus:outline-none"
+                        className="border-2 border-gray-300 rounded-2xl px-3 py-2 focus:border-primary focus:outline-none"
                         onChange={(e)=> setUsername(e.target.value)}
                         value={username}
                         required
@@ -57,7 +57,7 @@ export default function Signup() {
                         type="email"
                         name="email"
                         placeholder="example@gmail.com"
-                        className="border border-2 border-gray-300 rounded-2xl px-3 py-2 focus:border-primary focus:outline-none"
+                        className="border-2 border-gray-300 rounded-2xl px-3 py-2 focus:border-primary focus:outline-none"
                         onChange={(e)=> setEmail(e.target.value)}
                         value={email}
                         required
@@ -73,7 +73,7 @@ export default function Signup() {
                         name="password"
                         type={showPassword ? "text" : "password"}
                         placeholder="••••••••"
-                        className="border border-2 border-gray-300 rounded-2xl px-3 py-2 focus:border-primary focus:outline-none"
+                        className="border-2 border-gray-300 rounded-2xl px-3 py-2 focus:border-primary focus:outline-none"
                         onChange={(e)=> setPassword(e.target.value)}
                         value={password}
                         required
