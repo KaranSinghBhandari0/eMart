@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { Menu, X, Home, ShoppingCart, Settings } from "lucide-react";
+import { Home, ShoppingCart, Settings } from "lucide-react";
 import ProfileDropdown from "./ProfileDropdown";
 import { Link } from "react-router-dom";
 

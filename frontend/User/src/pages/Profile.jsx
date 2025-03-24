@@ -1,9 +1,9 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { User, Mail, MapPin, Edit, Save } from "lucide-react";
-import { AuthContext } from "../context/AuthContext";
+import { AuthStore } from "../store/AuthStore";
 
 export default function ProfilePage() {
-    const { user, loading, updateProfile } = useContext(AuthContext);
+    const { user, updatingProfile, updateProfile } = AuthStore();
 
     const [username, setUsername] = useState(user.username || "");
     const [address, setAddress] = useState(user.address || "");
@@ -28,7 +28,7 @@ export default function ProfilePage() {
                             name="name"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
-                            disabled={!isEditing || loading}
+                            disabled={!isEditing || updatingProfile}
                             className="w-full bg-transparent outline-none text-gray-700 disabled:text-gray-400"
                         />
                     </div>
@@ -57,7 +57,7 @@ export default function ProfilePage() {
                             name="address"
                             value={address}
                             onChange={(e) => setAddress(e.target.value)}
-                            disabled={!isEditing || loading}
+                            disabled={!isEditing || updatingProfile}
                             className="w-full bg-transparent outline-none text-gray-700 disabled:text-gray-400 resize-none"
                             rows={2}
                         />
@@ -66,8 +66,8 @@ export default function ProfilePage() {
 
                 <button
                     onClick={isEditing ? handleSave : () => setIsEditing(true)}
-                    disabled={loading}
-                    className={`w-full flex items-center justify-center gap-2 px-4 py-2 text-white font-medium rounded-lg transition-all ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-primary hover:bg-opacity-90 active:scale-95"} `}
+                    disabled={updatingProfile}
+                    className={`w-full flex items-center justify-center gap-2 px-4 py-2 text-white font-medium rounded-lg transition-all ${updatingProfile ? "bg-gray-400 cursor-not-allowed" : "bg-primary hover:bg-opacity-90 active:scale-95"} `}
                 >
                     {isEditing ? <Save size={18} /> : <Edit size={18} />}
                     {isEditing ? "Save Changes" : "Edit Profile"}

@@ -1,10 +1,9 @@
-import React, { useContext } from 'react';
 import { ShoppingCart } from 'lucide-react';
-import { ProductContext } from '../context/ProductContext';
+import { ProductStore } from '../store/ProductStore';
 
 export default function CartSummary({ summary, totalItems }) {
 
-    const { handleBuy } = useContext(ProductContext);
+    const { handleBuy } = ProductStore();
 
     return (
         <div className='w-full max-w-80 border shadow-md rounded-xl'>

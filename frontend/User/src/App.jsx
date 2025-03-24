@@ -1,7 +1,9 @@
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { FaSpinner } from "react-icons/fa";
 import { Toaster } from "react-hot-toast";
+import { useNavigate } from 'react-router-dom';
+import { setNavigate } from './lib/navigation';
 
 import ScrollToTop from './lib/ScrollToTop';
 import Navbar from './components/Navbar';
@@ -17,10 +19,15 @@ import Features from './components/Features';
 import Profile from "./pages/Profile";
 import PageNotFound from "./pages/PageNotFound";
 
-import { AuthContext } from "./context/AuthContext";
+import { AuthStore } from "./store/AuthStore";
 
 export default function App() {
-    const {user, isAuthenticated, checkingAuth} = useContext(AuthContext);
+    const { user, isAuthenticated, checkingAuth } = AuthStore();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        setNavigate(navigate);
+    }, [navigate]);
 
     useEffect(()=> {
         isAuthenticated();

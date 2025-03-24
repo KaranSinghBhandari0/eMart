@@ -1,11 +1,10 @@
-import React, { useContext } from 'react'
 import { Link } from 'react-router-dom';
 import { Minus, Plus, Trash2 } from 'lucide-react';
-import { CartContext } from '../context/CartContext'
+import { CartStore } from '../store/CartStore';
 
 export default function CartProduct({ product, quantity }) {
 
-    const { updateCart, deleteCartItem } = useContext(CartContext);
+    const { updateCart, deleteCartItem } = CartStore();
 
     return (
         <div className='flex border-b pb-4'>

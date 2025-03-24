@@ -1,18 +1,19 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ChevronDown } from 'lucide-react';
 
 import EmptyOrders from '../components/EmptyOrders';
 import ProductCard from '../components/ProductCard';
-import { AuthContext } from '../context/AuthContext';
-import { ProductContext } from '../context/ProductContext';
+import { AuthStore } from '../store/AuthStore';
+import { ProductStore } from '../store/ProductStore';
 
 export default function Orders() {
-    const { orders, isAuthenticated } = useContext(AuthContext);
-    const { products } = useContext(ProductContext);
+    const { orders, isAuthenticated } = AuthStore();
+    const { products, getAllProducts } = ProductStore();
 
     useEffect(() => {
         isAuthenticated();
+        getAllProducts();
     }, [])
 
     return (
@@ -103,9 +104,18 @@ export default function Orders() {
                         <ProductCard key={product._id} product={product} />
                     ))}
                 </div>
-                <Link to="/allProducts" className="bg-gray-300 border px-4 py-2 rounded-lg mx-auto block text-center w-fit">
-                    See more
-                </Link>
+                <div className="relative flex items-center my-6">
+                    <div className="flex-1 border-t border-gray-300"></div>
+
+                    <Link
+                        to="/allProducts"
+                        className="flex items-center justify-center bg-gray-300 border w-10 h-10 rounded-full mx-4"
+                    >
+                        <ChevronDown size={18} />
+                    </Link>
+
+                    <div className="flex-1 border-t border-gray-300"></div>
+                </div>
             </div>
         </div>
     );

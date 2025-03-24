@@ -1,11 +1,10 @@
-import React, { useContext } from "react";
 import { AiOutlineHeart } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import RatingStars from './RatingStars';
-import { CartContext } from '../context/CartContext';
+import { CartStore } from "../store/CartStore";
 
 export default function ProductCard({ product }) {
-    const {addToCart} = useContext(CartContext);
+    const { addToCart } = CartStore();
     
     return (
         <div className="border rounded-lg p-4 shadow-md hover:shadow-lg transition-all w-64 cursor-pointer">

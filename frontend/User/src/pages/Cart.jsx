@@ -1,30 +1,23 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ChevronDown } from 'lucide-react';
 
 import EmptyCart from '../components/EmptyCart';
 import CartSummary from '../components/CartSummary';
 import CartFooter from '../components/CartFooter';
 import CartProduct from '../components/CartProduct';
 import ProductCard from '../components/ProductCard';
-import { CartContext } from '../context/CartContext';
-import { ProductContext } from '../context/ProductContext';
+import { ProductStore } from '../store/ProductStore';
+import { CartStore } from '../store/CartStore';
 
 export default function Cart() {
-    const { cartProducts, loading, getCart } = useContext(CartContext);
-    const { products } = useContext(ProductContext);
+    const { cartProducts, loading, getCart } = CartStore();
+    const { products, getAllProducts } = ProductStore();
 
     useEffect(() => {
-        fetchCart();
+        getCart();
+        getAllProducts();
     }, []);
-
-    const fetchCart = async () => {
-        try {
-            await getCart();
-        } catch (error) {
-            console.error('Error fetching cart:', error);
-        }
-    };
 
     const calculateSubtotal = () => {
         return cartProducts.reduce((total, item) => total + item.product.price * item.quantity, 0);
@@ -79,9 +72,18 @@ export default function Cart() {
                         <ProductCard key={product._id} product={product} />
                     ))}
                 </div>
-                <Link to="/allProducts" className="bg-gray-300 border px-4 py-2 rounded-lg mx-auto block text-center w-fit">
-                    See more
-                </Link>
+                <div className="relative flex items-center my-6">
+                    <div className="flex-1 border-t border-gray-300"></div>
+
+                    <Link
+                        to="/allProducts"
+                        className="flex items-center justify-center bg-gray-300 border w-10 h-10 rounded-full mx-4"
+                    >
+                        <ChevronDown size={18} />
+                    </Link>
+
+                    <div className="flex-1 border-t border-gray-300"></div>
+                </div>
             </div>
         </div>
     );

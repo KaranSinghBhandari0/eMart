@@ -1,9 +1,10 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { AiFillStar } from "react-icons/ai";
 import { ProductContext } from "../context/ProductContext";
+import { ProductStore } from "../store/ProductStore";
 
 export default function ProductRating({productId}) {
-    const {updateRating} = useContext(ProductContext);
+    const { updateRating } = ProductStore();
 
     const [rating, setRating] = useState(0);
     const [hover, setHover] = useState(0);

@@ -1,10 +1,10 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
 import { Eye, EyeOff } from "lucide-react";
+import { AuthStore } from "../store/AuthStore";
 
 export default function Login() {
-    const { login, loading } = useContext(AuthContext);
+    const { login, loading } = AuthStore();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");

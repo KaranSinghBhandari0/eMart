@@ -1,23 +1,28 @@
-import React, { useContext } from "react";
+import React, { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 
 import RatingStars from "../components/RatingStars";
 import ProductCard from "../components/ProductCard";
 import ProductRating from "../components/ProductRating";
 import ProductDetails from "../components/ProductDetails";
-import { CartContext } from '../context/CartContext';
-import { ProductContext } from '../context/ProductContext';
+import { ProductStore } from "../store/ProductStore";
+import { CartStore } from "../store/CartStore";
+import { ChevronDown } from "lucide-react";
 
 export default function Product() {
-    const { addToCart } = useContext(CartContext);
-    const { products, handleBuy } = useContext(ProductContext);
+    const { addToCart } = CartStore();
+    const { products, handleBuy, getAllProducts } = ProductStore();
+
+    useEffect(() => {
+        getAllProducts();
+    }, [])
 
     const { id } = useParams();
     const product = products.find((p) => p._id === id);
 
     const relatedProducts = products.filter((p) => p._id !== id);
 
-    if(!product) {
+    if (!product) {
         return (
             <div className='h-[80vh] w-full flex flex-col items-center justify-center'>
                 <p>Loading Product...</p>
@@ -54,7 +59,7 @@ export default function Product() {
                         {product.description}
                     </p>
                     <div className="flex gap-4">
-                        <button className="w-full sm:w-auto flex-1 border-2 border-primary text-white py-2 rounded-lg bg-primary hover:opacity-80" onClick={()=> handleBuy(product.price, product)}>
+                        <button className="w-full sm:w-auto flex-1 border-2 border-primary text-white py-2 rounded-lg bg-primary hover:opacity-80" onClick={() => handleBuy(product.price, product)}>
                             Buy Now
                         </button>
                         <button className="w-full sm:w-auto flex-1 border-2 border-primary text-primary py-2 rounded-lg hover:bg-primary hover:text-white" onClick={() => addToCart(product)}>
@@ -79,9 +84,18 @@ export default function Product() {
                         <ProductCard key={product._id} product={product} />
                     ))}
                 </div>
-                <Link to="/allProducts" className="bg-gray-300 border px-4 py-2 rounded-lg mx-auto block text-center w-fit">
-                    See more
-                </Link>
+                <div className="relative flex items-center my-6">
+                    <div className="flex-1 border-t border-gray-300"></div>
+
+                    <Link
+                        to="/allProducts"
+                        className="flex items-center justify-center bg-gray-300 border w-10 h-10 rounded-full mx-4"
+                    >
+                        <ChevronDown size={18} />
+                    </Link>
+
+                    <div className="flex-1 border-t border-gray-300"></div>
+                </div>
             </div>
 
         </div>

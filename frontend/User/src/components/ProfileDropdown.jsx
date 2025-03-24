@@ -1,10 +1,10 @@
-import React, { useState, useContext, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { UserCircle, LogIn, ShoppingBag, LogOut, ShoppingCart, Settings, User2 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
+import { AuthStore } from "../store/AuthStore";
 
 export default function ProfileDropdown() {
-    const { user, logout } = useContext(AuthContext);
+    const { user, logout } = AuthStore();
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
 

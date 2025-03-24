@@ -1,10 +1,14 @@
-import React, { useContext, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ProductCard from '../components/ProductCard';
-import { ProductContext } from '../context/ProductContext';
+import { ProductStore } from '../store/ProductStore';
 
 export default function AllProducts() {
-    const { products } = useContext(ProductContext);
+    const { products, getAllProducts } = ProductStore();
     const [selectedCategory, setSelectedCategory] = useState('All');
+
+    useEffect(()=> {
+        getAllProducts();
+    }, [])
 
     // Get unique categories
     const categories = ['All', ...new Set(products.map(product => product.category))];

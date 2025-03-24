@@ -1,12 +1,16 @@
-import React, { useContext } from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
 import ProductCard from "../components/ProductCard";
 import Carousel from "../components/Carousel";
-import { ProductContext } from '../context/ProductContext';
+import { ProductStore } from "../store/ProductStore";
 
 export default function Home() {
-    const { products } = useContext(ProductContext);
+    const { products, getAllProducts } = ProductStore();
+
+    useEffect(() => {
+        getAllProducts();
+    }, [])
 
     return (
         <div className="py-3 w-full">
