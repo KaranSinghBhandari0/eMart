@@ -17,7 +17,7 @@ const login = async (req, res) => {
         const { email, password } = req.body;
 
         if(!email || !password) {
-            return res.status(400).json({ msg: "Email and password are required" });
+            return res.status(400).json({ message: "Email and password are required" });
         }
 
         if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASS) {
@@ -31,12 +31,12 @@ const login = async (req, res) => {
                 email: process.env.ADMIN_EMAIL,
             };
 
-            return res.status(200).json({ msg: "Login successful", admin });
+            return res.status(200).json({ message: "Login successful", admin });
         } else {
-            return res.status(401).json({ msg: "Invalid credentials" });
+            return res.status(401).json({ message: "Invalid credentials" });
         }
     } catch (error) {
-        res.status(500).json({ msg: "Server error", error: error.message });
+        res.status(500).json({ message: "Server error", error: error.message });
     }
 };
 
@@ -48,9 +48,9 @@ const logout = async (req, res) => {
             secure: true,
             sameSite: "None",
         });
-        res.status(200).json({ msg: "Logout successful" });
+        res.status(200).json({ message: "Logout successful" });
     } catch (error) {
-        res.status(500).json({ msg: "Server Error", error: error.message });
+        res.status(500).json({ message: "Server Error", error: error.message });
     }
 };
 
@@ -60,7 +60,7 @@ const checkAuth = async (req, res) => {
         return res.status(200).json(req.admin);
     } catch (error) {
         console.log(error);
-        res.status(500).json({ msg: "Server Error", error: error.message });
+        res.status(500).json({ message: "Server Error", error: error.message });
     }
 };
 

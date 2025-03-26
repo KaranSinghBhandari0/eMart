@@ -62,16 +62,4 @@ const saveOrder = async (req, res) => {
     }
 };
 
-// Fetch all orders of a user
-const Orders = async (req, res) => {
-    try {
-        const user = await User.findById(req.user._id);
-        const orders = user.orders;
-        res.status(200).json({ orders });
-    } catch (error) {
-        console.error("Error fetching orders:", error);
-        res.status(500).json({ message: "Failed to fetch orders" });
-    }
-};
-
-module.exports = { createOrder, saveOrder, Orders };
+module.exports = { createOrder, saveOrder };

@@ -112,9 +112,9 @@ const transfer = async (req, res) => {
         }
   
         await currUser.save();
-        res.status(200).json({ msg: 'Cart transferred successfully' });
+        res.status(200).json({ message: 'Cart transferred successfully' });
     } catch (error) {
-        res.status(500).json({ msg: 'Error transferring cart', error: error.message });
+        res.status(500).json({ message: 'Error transferring cart', error: error.message });
     }
 }
 

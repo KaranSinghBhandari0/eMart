@@ -33,11 +33,11 @@ export const AppProvider = ({ children }) => {
             const res = await axiosInstance.post("/admin/login", formData);
             setAdmin(res.data.admin);
             allOrders();
-            toast.success(res.data.msg);
+            toast.success(res.data.message);
             navigate('/');
         } catch (error) {
             console.log(error);
-            toast.error(error.response?.data?.msg || "Login failed");
+            toast.error(error.response?.data?.message || "Login failed");
         } finally {
             setLoading(false);
         }

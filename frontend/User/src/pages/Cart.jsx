@@ -23,7 +23,7 @@ export default function Cart() {
         return cartProducts.reduce((total, item) => total + item.product.price * item.quantity, 0);
     };
 
-    if (loading) {
+    if(loading) {
         return (
             <div className='h-[80vh] w-full flex flex-col items-center justify-center'>
                 <p>Loading Cart...</p>
@@ -53,16 +53,11 @@ export default function Cart() {
                             ))}
                         </div>
                     </div>
-                    <Link
-                        to="/allProducts"
-                        className="px-6 py-3 bg-primary text-white font-medium rounded-full transition-transform duration-300 ease-in-out hover:scale-105 shadow-md hover:shadow-lg flex justify-center items-center gap-2 my-8 w-56"
-                    >
-                        Continue Shopping <ArrowRight size={20} />
-                    </Link>
                     <CartFooter />
                 </div>
                 <CartSummary summary={calculateSubtotal()} totalItems={cartProducts.length} />
             </div>
+
             <div className="hidden md:block">
                 <p className="text-2xl text-gray-700 font-semibold text-center mt-6">
                     Related <span className="text-primary"> Products </span>

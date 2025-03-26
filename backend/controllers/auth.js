@@ -17,12 +17,12 @@ const signup = async (req, res) => {
         // Check if the user already exists
         const existingUser = await User.findOne({ email });
         if(existingUser) {
-            return res.status(400).json({ msg: 'e-mail already exists' });
+            return res.status(400).json({ message: 'e-mail already exists' });
         }
 
         // checking for strong password
         if (password.length < 6) {
-            return res.status(400).json({ msg: 'Password must be at least 6 characters long' });
+            return res.status(400).json({ message: 'Password must be at least 6 characters long' });
         }
 
         // Hash the password
@@ -43,10 +43,11 @@ const signup = async (req, res) => {
 
         // Save the user to the database
         await newUser.save();
+        const { password: _, orders: __, ...userWithoutSensitiveData } = newUser._doc;
 
-        res.status(200).json({ msg: `Welcome ${newUser.username}` , user:newUser});
+        res.status(200).json({ message: `Welcome ${newUser.username}` , user: userWithoutSensitiveData});
     } catch (error) {
-        res.status(500).json({ msg: 'Server error', error: error.message });
+        res.status(500).json({ message: 'Server error', error: error.message });
     }
 }
 
@@ -57,13 +58,13 @@ const login = async (req, res) => {
         // Checking email
         const user = await User.findOne({ email });
         if(!user) {
-            return res.status(400).json({ msg: 'User not found' });
+            return res.status(400).json({ message: 'User not found' });
         }
 
         // Compare passwords
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).json({ msg: 'Invalid password' });
+            return res.status(400).json({ message: 'Invalid password' });
         }
 
         // Generate a JWT token
@@ -71,9 +72,11 @@ const login = async (req, res) => {
         // store in cookies
         res.cookie('token', token, cookieOptions);
 
-        res.status(200).json({ msg: 'Login successful', user});
+        const { password: _, orders: __, ...userWithoutSensitiveData } = user._doc;
+
+        res.status(200).json({ message: 'Login successful', user: userWithoutSensitiveData});
     } catch (error) {
-        res.status(500).json({ msg: 'Server error', error: error.message });
+        res.status(500).json({ message: 'Server error', error: error.message });
     }
 }
 
@@ -83,11 +86,18 @@ const logout = async (req,res) => {
         secure: true,
         sameSite: "None",
     });
-    res.status(200).json({msg: 'logout successfull'})
+    res.status(200).json({message: 'logout successfull'})
 }
 
 const checkAuth = async (req,res) => {
-    res.status(200).json(req.user);   
+    const user = {
+        userId: req.user._id,
+        username: req.user.username,
+        email: req.user.email,
+        address: req.user.address,
+    }
+    
+    res.status(200).json({ user });   
 }
 
 const updateProfile = async (req, res) => {
@@ -106,10 +116,25 @@ const updateProfile = async (req, res) => {
         user.address = newAddress;
 
         await user.save();
-        res.status(200).json({ msg: 'Profile Updated !!!'});
+        res.status(200).json({ message: 'Profile Updated !!!'});
     } catch (error) {
-        res.status(500).json({ msg: 'Server error', error: error.message });
+        res.status(500).json({ message: 'Server error', error: error.message });
     }
 }
 
-module.exports = { signup, login, logout, checkAuth, updateProfile };
+const fetchOrders = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id);
+        if(!user) {
+            return res.status(400).json({ message: 'user not authenticated' });
+        }
+
+        const orders = user.orders;
+
+        res.status(200).json({ orders });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+}
+
+module.exports = { signup, login, logout, checkAuth, updateProfile, fetchOrders };

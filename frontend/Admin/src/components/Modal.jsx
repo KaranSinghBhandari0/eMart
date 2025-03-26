@@ -145,14 +145,14 @@ export default function Modal() {
                         <div className="w-full flex gap-6">
                             <button
                                 type="submit"
-                                className="bg-blue-500 text-white py-2 px-4 rounded-xl shadow-sm hover:bg-blue-600"
+                                className="bg-primary px-4 py-2 text-white  rounded-md text-sm hover:opacity-90"
                                 disabled={loading}
                             >
                                 {loading ? "Updating..." : "Update"}
                             </button>
                             <button
                                 type="button"
-                                className="bg-red-500 text-white py-2 px-4 rounded-xl shadow-sm hover:bg-red-600"
+                                className="bg-secondary px-4 py-2 text-white  rounded-md text-sm hover:opacity-90"
                                 onClick={handleDelete}
                                 disabled={deleting}
                             >

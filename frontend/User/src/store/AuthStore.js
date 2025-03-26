@@ -9,12 +9,13 @@ export const AuthStore = create((set, get) => ({
     orders: [],
     loading: false,
     updatingProfile: false,
+    fetchingOrders: false,
 
     // check authentication
     isAuthenticated: async () => {
         try {
             const res = await axiosInstance.get("/auth/checkAuth");
-            set({ user: res.data, orders: res.data.orders });
+            set({ user: res.data.user });
         } catch (error) {
             set({ user: null });
             console.log("Error in checkAuth:", error);
@@ -31,10 +32,10 @@ export const AuthStore = create((set, get) => ({
             set({ user: res.data.user });
             await get().transferGuestCartToUser();
             get().redirectToPath();
-            toast.success(res.data.msg);
+            toast.success(res.data.message);
         } catch (error) {
             console.log(error);
-            toast.error(error.response?.data?.msg || "Login failed");
+            toast.error(error.response?.data?.message || "Login failed");
         } finally {
             set({ loading: false });
         }
@@ -48,10 +49,10 @@ export const AuthStore = create((set, get) => ({
             set({ user: res.data.user });
             await get().transferGuestCartToUser();
             get().redirectToPath();
-            toast.success(res.data.msg);
+            toast.success(res.data.message);
         } catch (error) {
             console.log(error);
-            toast.error(error.response?.data?.msg || "Signup failed");
+            toast.error(error.response?.data?.message || "Signup failed");
         } finally {
             set({ loading: false });
         }
@@ -101,9 +102,24 @@ export const AuthStore = create((set, get) => ({
             toast.success("Profile Updated !!!");
         } catch (error) {
             console.log(error);
-            toast.error(error.response?.data?.msg || "Failed to update profile");
+            toast.error(error.response?.data?.message || "Failed to update profile");
         } finally {
             set({ updatingProfile: false });
         }
     },
+
+    // fetch prders
+    fetchOrders: async () => {
+        try {
+            set({ fetchingOrders: true });
+            const res = await axiosInstance.get("/auth/fetchOrders");
+            set({ orders: res.data.orders })
+        } catch (error) {
+            console.log(error);
+            toast.error(error.response?.data?.message || "Failed to fetch orders");
+        } finally {
+            set({ fetchingOrders: false });
+        }
+    },
+
 }));

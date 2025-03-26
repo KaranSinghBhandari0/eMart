@@ -21,10 +21,10 @@ export default function Navbar() {
                         <ShoppingCart size={20} />
                         <span>Cart</span>
                     </Link>
-                    <p to='/cart' className="flex items-center space-x-2 text-black hover:text-gray-700 transition duration-300 ease-in-out transform hover:scale-105 cursor-pointer" onClick={() => window.open('https://emart-admin-by-karan.vercel.app', '_blank', 'noopener,noreferrer')}>
+                    <a href={import.meta.env.VITE_ADMIN_URL} className="flex items-center space-x-2 text-black hover:text-gray-700 transition duration-300 ease-in-out transform hover:scale-105 cursor-pointer" target="_blank" rel="noopener noreferrer">
                         <Settings size={20} />
                         <span>Admin</span>
-                    </p>
+                    </a>
                 </div>
                 <ProfileDropdown />
             </div>
