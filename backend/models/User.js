@@ -4,6 +4,7 @@ const userSchema = new mongoose.Schema({
     username: {
         type: String,
         required: [true, "Name is required"],
+        trim: true,
     },
     email: {
         type: String,
@@ -16,6 +17,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, "Password is required"],
         minlength: [6, "Password must be at least 6 characters long"],
+        trim: true,
+    },
+    phone: {
+        type: String,
+        unique: true,
     },
     cart: [
         {
@@ -35,9 +41,27 @@ const userSchema = new mongoose.Schema({
         type: Array
     },
     address: {
-        type: String,
-        default: ""
-    }
+        street: {
+            type: String,
+            trim: true,
+            default: ""
+        },
+        city: {
+            type: String,
+            trim: true,
+            default: ""
+        },
+        state: {
+            type: String,
+            trim: true,
+            default: ""
+        },
+        zipCode: {
+            type: String,
+            trim: true,
+            default: ""
+        },
+    },
 });
 
 const User = mongoose.model("User", userSchema);

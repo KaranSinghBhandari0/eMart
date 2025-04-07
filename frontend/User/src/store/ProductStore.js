@@ -52,8 +52,9 @@ export const ProductStore = create((set, get) => ({
     // Buy product
     handleBuy: async (amount, product) => {
         const { user } = AuthStore.getState();
+        const isAddressValid = get().isAddressValid;
 
-        if (!user) {
+        if(!user) {
             toast.error("Login to continue");
 
             // Store intended URL
@@ -62,8 +63,9 @@ export const ProductStore = create((set, get) => ({
             return;
         }
 
-        if (user.address === "") {
+        if(!isAddressValid(user.address)) {
             toast.error("Add Delivery address");
+            localStorage.setItem("isAddress", window.location.pathname);
             navigateTo("/profile");
             return;
         }
@@ -112,4 +114,14 @@ export const ProductStore = create((set, get) => ({
             toast.error("Failed to create order. Please try again later.");
         }
     },
+
+    // Check if address is valid
+    isAddressValid: (address) => {
+        const { street, city, state, zipCode } = address;
+        if(street === "" || city === "" || state === "" || zipCode === "") {
+            return false;
+        }
+        return true;
+    },
+
 }));

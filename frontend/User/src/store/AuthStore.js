@@ -94,12 +94,18 @@ export const AuthStore = create((set, get) => ({
     },
 
     // profile update
-    updateProfile: async (username, address) => {
+    updateProfile: async (userData) => {
         try {
             set({ updatingProfile: true });
-            await axiosInstance.post("/auth/updateProfile", { username, address });
+            await axiosInstance.post("/auth/updateProfile", userData);
             await get().isAuthenticated();
-            toast.success("Profile Updated !!!");
+            if(localStorage.getItem("isAddress")) {
+                toast.success("Address added successfully");
+                navigateTo(localStorage.getItem("isAddress"));
+                localStorage.removeItem("isAddress");
+            } else {
+                toast.success("Profile updated successfully");
+            }
         } catch (error) {
             console.log(error);
             toast.error(error.response?.data?.message || "Failed to update profile");

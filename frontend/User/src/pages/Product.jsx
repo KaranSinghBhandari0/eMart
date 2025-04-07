@@ -33,13 +33,25 @@ export default function Product() {
     return (
         <div>
             <div className="w-full max-w-5xl mx-auto p-4 flex flex-col md:flex-row items-center md:items-start gap-8">
-                <div className="w-full max-w-xs md:max-w-sm flex justify-center">
+                <div className="w-full max-w-xs md:max-w-sm flex flex-col items-center gap-3">
                     <img
                         src={product.image}
                         alt={product.name}
                         className="rounded-xl w-full h-auto max-h-44 object-contain"
                     />
+
+                    <div className="flex gap-4 mt-6">
+                        {[1, 2, 3, 4].map((_, i) => (
+                            <img
+                                key={i}
+                                src={product.image}
+                                alt={`Thumbnail ${i + 1}`}
+                                className="w-12 h-12 object-contain cursor-pointer border border-gray-300 rounded-md"
+                            />
+                        ))}
+                    </div>
                 </div>
+
                 <div className="space-y-4 w-full">
                     <p className="text-2xl font-semibold text-gray-800">
                         {product.name}

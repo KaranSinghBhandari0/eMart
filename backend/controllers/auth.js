@@ -95,6 +95,7 @@ const checkAuth = async (req,res) => {
         username: req.user.username,
         email: req.user.email,
         address: req.user.address,
+        phone: req.user.phone,
     }
     
     res.status(200).json({ user });   
@@ -102,25 +103,39 @@ const checkAuth = async (req,res) => {
 
 const updateProfile = async (req, res) => {
     try {
-        const { username, address } = req.body;
+        const { username, phone, address } = req.body;
 
         const user = await User.findById(req.user._id);
-
-        const newUsername = username.trim();
-        const newAddress = address.trim();
-
-        if(newUsername !== "") {
-            user.username = newUsername;
+        if(!user) {
+            return res.status(404).json({ message: 'User not found' });
         }
-        
-        user.address = newAddress;
+
+        if(phone && phone.length !== 10) {
+            return res.status(400).json({ message: 'Invalid mobile number' });
+        }
+
+        if(username) {
+            user.username = username;
+        }
+        if(phone) {
+            user.phone = phone;
+        }
+
+        if(address) {
+            user.address.street = address.street || "";
+            user.address.city = address.city || "";
+            user.address.state = address.state || "";
+            user.address.zipCode = address.zipCode || "";
+        }
 
         await user.save();
-        res.status(200).json({ message: 'Profile Updated !!!'});
+
+        res.status(200).json({ message: 'Profile updated successfully' });
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
+        console.error('Profile update error:', error);
+        res.status(500).json({ message: 'Failed to update profile', error: error.message });
     }
-}
+};
 
 const fetchOrders = async (req, res) => {
     try {
