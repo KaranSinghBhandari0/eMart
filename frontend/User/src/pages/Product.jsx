@@ -70,7 +70,7 @@ export default function Product() {
                     <p className="text-gray-700 text-sm md:text-base line-clamp-4">
                         {product.description}
                     </p>
-                    <div className="flex gap-4">
+                    <div className="flex gap-4 pb-6">
                         <button className="w-full sm:w-auto flex-1 border-2 border-primary text-white py-2 rounded-lg bg-primary hover:opacity-80" onClick={() => handleBuy(product.price, product)}>
                             Buy Now
                         </button>
@@ -78,13 +78,13 @@ export default function Product() {
                             Add to Cart
                         </button>
                     </div>
+
+                    <ProductDetails />
+
                 </div>
             </div>
 
-            <div className="flex flex-col gap-4 items-start md:flex-row-reverse md:justify-evenly px-2 my-8">
-                <ProductDetails />
-                <ProductRating productId={product._id} />
-            </div>
+            <ProductRating productId={product._id} product={product} />
 
             {/* Related Products */}
             <div className="hidden md:block">
