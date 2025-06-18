@@ -3,7 +3,7 @@ import { AppContext } from "../context/AppContext";
 import { LoaderCircle } from 'lucide-react';
 
 export default function Login() {
-    const { login, loading } = useContext(AppContext);
+    const { login, logging } = useContext(AppContext);
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -57,9 +57,9 @@ export default function Login() {
                     <button
                         type="submit"
                         className="w-full bg-primary hover:bg-opacity-90 text-white font-medium py-2 px-4 rounded-lg transition duration-300"
-                        disabled={loading}
+                        disabled={logging}
                     >
-                        {loading ? (
+                        {logging ? (
                             <div className="flex items-center justify-center gap-2">
                                 <LoaderCircle className="animate-spin" />
                                 <p>Logging...</p>

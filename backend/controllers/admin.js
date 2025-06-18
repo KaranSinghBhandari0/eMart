@@ -2,6 +2,11 @@ const jwt = require("jsonwebtoken");
 const Product = require('../models/Product');
 const User = require('../models/User');
 const cloudinary = require('../lib/cloudConfig');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
+const fs = require('fs');
+
+// Initialize Gemini
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // cookies option
 const cookieOptions = {
@@ -97,7 +102,7 @@ const updateProduct = async (req, res) => {
             return res.status(404).json({ message: 'Product not found' });
         }
 
-        if (req.file) {
+        if(req.file) {
             // Delete old image from Cloudinary
             await cloudinary.uploader.destroy(product.cloudinary_id);
 
@@ -185,4 +190,63 @@ const updateOrderStatus = async (req, res) => {
     }
 };
 
-module.exports = { login, logout, checkAuth, addNewProduct, updateProduct, deleteProduct, getAllOrders, updateOrderStatus };
+// Generate AI response
+const generateProductInfo = async (req, res) => {
+    try {
+        if(!req.file) {
+            return res.status(400).json({ message: 'No image uploaded' });
+        }
+
+        const productInfo = await helper(req.file);
+        res.status(200).json(productInfo);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Error generating AI response", error: error.message });
+    }
+};
+
+async function helper(imageFile) {
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+    //Read image buffer from the file path
+    const imageBuffer = fs.readFileSync(imageFile.path);
+
+    const imagePart = {
+        inlineData: {
+            data: imageBuffer.toString('base64'), // Convert to base64
+            mimeType: imageFile.mimetype,
+        },
+    };
+
+    const prompt = `
+    Analyze this product image and generate the following information in JSON format:
+    {
+      "title": "A short and catchy product title (max 5-7 words)",
+      "description": "Concise product description highlighting key features (between 40 to 80 words)",
+      "price": "Reasonable price in Indian Rupees just number",
+      "category": "Most relevant product category (e.g., Electronics, Clothing, Home & Kitchen)"
+    }
+
+    Important guidelines:
+    1. Keep all responses brief and to the point
+    2. Price must be in Indian Rupees (₹)
+    3. Return only valid JSON without any additional text
+    4. Be realistic with pricing for the Indian market
+  `;
+
+    try {
+        const result = await model.generateContent([prompt, imagePart]);
+        const response = result.response;
+        const text = response.text();
+
+        const jsonString = text.match(/{[\s\S]*}/)?.[0]; // safer JSON extraction
+        const productInfo = JSON.parse(jsonString);
+
+        return productInfo;
+    } catch (error) {
+        console.error('Gemini API Error:', error);
+        throw new Error('Failed to generate product info from the image');
+    }
+}
+
+module.exports = { login, logout, checkAuth, addNewProduct, updateProduct, deleteProduct, getAllOrders, updateOrderStatus, generateProductInfo };

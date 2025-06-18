@@ -10,7 +10,7 @@ export const AppProvider = ({ children }) => {
 
     const [admin, setAdmin] = useState(null);
     const [checkingAuth, setCheckingAuth] = useState(true);
-    const [loading, setLoading] = useState(false);
+    const [callingAI, setCallingAI] = useState(false);
 
     const [products, setProducts] = useState([]);
     const [orders, setOrders] = useState([]);
@@ -18,6 +18,10 @@ export const AppProvider = ({ children }) => {
     const [currProduct, setCurrProduct] = useState(null);
     const [openModal, setOpenModal] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState("All");
+
+    const [logging, setLogging] = useState(false);
+    const [addingProduct, setAddingProduct] = useState(false);
+    const [updatingProduct, setUpdatingProduct] = useState(false);
 
     useEffect(() => {
         if(admin) {
@@ -29,7 +33,7 @@ export const AppProvider = ({ children }) => {
     // login
     const login = async (formData) => {
         try {
-            setLoading(true);
+            setLogging(true);
             const res = await axiosInstance.post("/admin/login", formData);
             setAdmin(res.data.admin);
             allOrders();
@@ -39,7 +43,7 @@ export const AppProvider = ({ children }) => {
             console.log(error);
             toast.error(error.response?.data?.message || "Login failed");
         } finally {
-            setLoading(false);
+            setLogging(false);
         }
     }
 
@@ -72,7 +76,7 @@ export const AppProvider = ({ children }) => {
     // add new Product
     const addNewProduct = async (productData) => {
         try {
-            setLoading(true);
+            setAddingProduct(true);
             const res = await axiosInstance.post("/admin/addNewProduct", productData);
             getAllProducts();
             navigate('/')
@@ -81,27 +85,24 @@ export const AppProvider = ({ children }) => {
             toast.error(res.data.message);
             console.log("Error in Adding Product:", error);
         } finally {
-            setLoading(false);
+            setAddingProduct(false);
         }
     }
 
     // get all Products
     const getAllProducts = async () => {
         try {
-            setLoading(true);
             const res = await axiosInstance.get("/product/getAllProducts");
             setProducts(res.data.products);
         } catch (error) {
             console.log(error);
-        } finally {
-            setLoading(false);
         }
     }
 
     // update Product
     const updateProduct = async (id, formData) => {
         try {
-            setLoading(true);
+            setUpdatingProduct(true);
             const res = await axiosInstance.put(`/admin/updateProduct/${id}`, formData);
             getAllProducts();
             toast.success('Product Updated');
@@ -109,7 +110,7 @@ export const AppProvider = ({ children }) => {
             toast.error('Failed to update product');
             console.log(error);
         } finally {
-            setLoading(false);
+            setUpdatingProduct(false);
         }
     }
 
@@ -147,15 +148,33 @@ export const AppProvider = ({ children }) => {
         }
     };
 
+    const autofillProductDetails = async (image) => {
+        try {
+            setCallingAI(true);
+            const aiForm = new FormData();
+            aiForm.append('image', image);
+
+            const res = await axiosInstance.post('/admin/generate-product-info', aiForm );
+            toast.success('AI Autofill Successfully');
+            return res;
+        } catch (error) {
+            toast.error(error.response?.data?.message || "AI Autofill failed:");
+            console.log("AI Autofill failed:", error);
+        } finally {
+            setCallingAI(false);
+        }
+    };
+
     return (
         <AppContext.Provider value={{
-            login, logout,
+            login, logout, logging,
             admin, isAuthorized, checkingAuth,
-            addNewProduct,
+            addNewProduct, addingProduct,
             getAllProducts, products,
             currProduct, setCurrProduct, openModal, setOpenModal,
-            updateProduct, deleteProduct,
-            loading, selectedCategory, setSelectedCategory, allOrders, orders, updateOrderStatus,
+            updatingProduct, deleteProduct, updateProduct,
+            selectedCategory, setSelectedCategory, allOrders, orders, updateOrderStatus,
+            autofillProductDetails, callingAI
         }}>
             {children}
         </AppContext.Provider>

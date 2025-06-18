@@ -3,7 +3,7 @@ import { X } from 'lucide-react';
 import { AppContext } from "../context/AppContext";
 
 export default function Modal() {
-    const { openModal, setOpenModal, currProduct, updateProduct, deleteProduct, loading } = useContext(AppContext);
+    const { openModal, setOpenModal, currProduct, updateProduct, deleteProduct, updatingProduct } = useContext(AppContext);
     const [deleting, setDeleting] = useState(false);
 
     const [formData, setFormData] = useState({
@@ -146,9 +146,9 @@ export default function Modal() {
                             <button
                                 type="submit"
                                 className="bg-primary px-4 py-2 text-white  rounded-md text-sm hover:opacity-90"
-                                disabled={loading}
+                                disabled={updatingProduct}
                             >
-                                {loading ? "Updating..." : "Update"}
+                                {updatingProduct ? "Updating..." : "Update"}
                             </button>
                             <button
                                 type="button"
