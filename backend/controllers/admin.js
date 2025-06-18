@@ -72,6 +72,10 @@ const checkAuth = async (req, res) => {
 // create new product
 const addNewProduct = async (req, res) => {
     try {
+        if(!process.env.CAN_ADD) {
+            return res.status(400).json({ message: "Access Denied!"});
+        }
+
 		const { name, description, price, category } = req.body;
         const result = await cloudinary.uploader.upload(req.file.path);
 
@@ -95,6 +99,10 @@ const addNewProduct = async (req, res) => {
 // Update product
 const updateProduct = async (req, res) => {
     try {
+        if(!process.env.CAN_ADD) {
+            return res.status(400).json({ message: "Access Denied!"});
+        }
+
         const { id } = req.params;
         const { name, description, price } = req.body;
         const product = await Product.findById(id);
@@ -127,6 +135,10 @@ const updateProduct = async (req, res) => {
 // delete product
 const deleteProduct = async (req, res) => {
     try {
+        if(!process.env.CAN_ADD) {
+            return res.status(400).json({ message: "Access Denied!"});
+        }
+
         const product = await Product.findByIdAndDelete(req.params.id);
         if(!product) {
             return res.status(404).json({ message: 'Product not found' });
@@ -162,6 +174,10 @@ const getAllOrders = async (req, res) => {
 // update Order Status
 const updateOrderStatus = async (req, res) => {
     try {
+        if(!process.env.CAN_ADD) {
+            return res.status(400).json({ message: "Access Denied!"});
+        }
+
         const { order, newStatus } = req.body;
         const { orderId, paymentId, productId } = order;
 
@@ -177,8 +193,6 @@ const updateOrderStatus = async (req, res) => {
         if(!currOrder) {
             return res.status(404).json({ message: "Order not found" });
         }
-
-        console.log(currOrder)
 
         currOrder.status = newStatus;
         user.markModified("orders");

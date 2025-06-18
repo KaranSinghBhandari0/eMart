@@ -82,7 +82,7 @@ export const AppProvider = ({ children }) => {
             navigate('/')
             toast.success(res.data.message);
         } catch (error) {
-            toast.error(res.data.message);
+            toast.error(error.response.data.message);
             console.log("Error in Adding Product:", error);
         } finally {
             setAddingProduct(false);
@@ -107,7 +107,7 @@ export const AppProvider = ({ children }) => {
             getAllProducts();
             toast.success('Product Updated');
         } catch (error) {
-            toast.error('Failed to update product');
+            toast.error(error.response.data.message || 'Failed to update product');
             console.log(error);
         } finally {
             setUpdatingProduct(false);
@@ -121,7 +121,7 @@ export const AppProvider = ({ children }) => {
             getAllProducts();
             toast.success('Product removed');
         } catch (error) {
-            toast.error('Failed to delete product');
+            toast.error(error.response.data.message || 'Failed to delete product');
             console.log(error);
         }
     }
@@ -143,7 +143,7 @@ export const AppProvider = ({ children }) => {
             await allOrders();
             toast.success('Order status updated');
         } catch (error) {
-            toast.error('Failed to Update order status');
+            toast.error(error.response.data.message || 'Failed to Update order status');
             console.log(error);
         }
     };

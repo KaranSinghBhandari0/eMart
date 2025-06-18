@@ -5,8 +5,8 @@ import { LoaderCircle } from 'lucide-react';
 export default function Login() {
     const { login, logging } = useContext(AppContext);
 
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [email, setEmail] = useState("admin@gmail.com");
+    const [password, setPassword] = useState("admin123");
 
     const handleSubmit = async (e) => {
         e.preventDefault();
